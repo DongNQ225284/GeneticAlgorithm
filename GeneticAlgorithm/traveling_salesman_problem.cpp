@@ -93,7 +93,7 @@ public:
 };
 
 //toán tử lai ghép, sử dụng lai ghép thứ tự (order crossover)
-vector<Individual> crossover(Individual p1, Individual p2, float p_c = 0.2) {
+vector<Individual> crossover(Individual p1, Individual p2) {
     vector<Individual> offspring;
     size_t length = p1.getLength();
     
@@ -305,7 +305,7 @@ Individual geneticalgorithm(Problem environment, //môi trường sống
         while (number_of_offspring > 0) {
             float r_c = dis(gen);
             if (r_c <= p_c) {
-                vector<Individual> offspring = crossover(parent[0], parent[1], p_c);
+                vector<Individual> offspring = crossover(parent[0], parent[1]);
                 float r_m = dis(gen);
                 if (r_m <= p_m) {
                     mutation(offspring[0]);
