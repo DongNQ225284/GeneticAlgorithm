@@ -13,6 +13,19 @@ private:
     //input
 public:
     //method
+};
+
+//giải mã cá thể khi biết nhiễm sắc thể và môi trường sống
+vector<int> decode(vector<float> chromosome) {
+    vector<int> phenotype;
+    //decode
+
+    return phenotype;
+}
+//đánh giá cá thể trong môi trường sống
+double calculateMetric(vector<int> phenotype, Problem environment) {
+    //calculate
+    return -1;
 }
 
 class Individual {
@@ -53,12 +66,22 @@ public:
     }
     //hiển thị thông tin của cá thể
     void show() {
-        vector<int> phenotype = decode(chromosome);
         printf("fitness = %.2lf\t\t", fitness);
         printf("chormosome: { "); for (double it : chromosome) printf("%.2lf ", it); printf("}\t\t");
-        printf("phenotype: { "); for (size_t it : phenotype) printf("%d ", it); printf("}\n");
     }
 };
+
+//toán tử lai tạo
+vector<Individual> crossover(Individual p1, Individual p2) {
+    vector<Individual> offspring;
+    //crossover
+    return offspring;
+}
+
+//toán tử đột biến
+void mutation(Individual& member) {
+    //mutation
+}
 
 class Population {
 private:
@@ -79,7 +102,7 @@ public:
     }
     //lấy kích thước của quần thể
     size_t getSize() {
-        return this->individual_list.size();
+        return this->list.size();
     }
     //lấy danh sách các cá thể
     vector<Individual>& getList() {
@@ -110,39 +133,12 @@ public:
     }
 };
 
-//các phép toán với cá thể
-
-//giải mã cá thể khi biết nhiễm sắc thể và môi trường sống
-vector<int> decode(vector<float> chromosome, Problem environment) {
-    vector<int> phenotype;
-    //decode
-
-    return phenotype;
-}
-
-//đánh giá cá thể trong môi trường sống
-double calculateMetric(Problem environment) {
-    //calculate
-}
-
-//toán tử lai tạo
-vector<float> crossover(Individual p1, Individual p2) {
-    vector<float> offspring;
-    //crossover
-    return offspring;
-}
-
-//toán tử đột biến
-void (Individual& member) {
-    //mutation
-}
-
 //Thuật toán GA trả về cá thể tốt nhất
 Individual geneticalgorithm(Problem environment, //môi trường sống
                             size_t number_of_individuals, //số lượng cá thể trong môi trường
                             size_t number_of_generation, //số lượng thế hệ
-                            float p_m, //tỷ lệ lai tạo
-                            float p_c //tỷ lệ đột biến
+                            float p_c, //tỷ lệ lai tạo
+                            float p_m //tỷ lệ đột biến
                             )  
 {
     uniform_real_distribution<float> dis(0.0, 1.0);
@@ -154,23 +150,24 @@ Individual geneticalgorithm(Problem environment, //môi trường sống
         size_t number_of_offspring = number_of_individuals;
         while (number_of_offspring) {
             float r_m = dis(gen);
-            if (r_m <= p_m) {
+            if (r_c <= p_c) {
                 vector<Individual> offspring = crossover(parent[0], parent[1]);
                 float r_c = dis(gen);
-                if (r_c <= p_c) {
+                if (r_m <= p_m) {
                     mutation(offspring[0]);
                     mutation(offspring[1]);
                 }
                 offspring[0].calculateFitness(environment);
                 offspring[1].calculateFitness(environment);
-            }
-            if (offspring[0].getFitness() > 0) {
-                population.append(offspring[0]);
-                number_of_offspring--;
-            }
-            if (offspring[1].getFitness() > 0) {
-                population.append(offspring[1]);
-                number_of_offspring--;
+                
+                if (offspring[0].getFitness() > 0) {
+                    population.append(offspring[0]);
+                    number_of_offspring--;
+                }
+                if (offspring[1].getFitness() > 0) {
+                    population.append(offspring[1]);
+                    number_of_offspring--;
+                }
             }
         }
         population.selection();
