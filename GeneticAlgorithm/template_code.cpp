@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <algorithm>
 
 using namespace std;
 
@@ -10,35 +11,21 @@ static mt19937 gen(rd());
 //vấn đề
 class Problem {
 private:
-    //input
+    
 public:
-    //method
+    
 };
-
-//giải mã cá thể khi biết nhiễm sắc thể và môi trường sống
-vector<int> decode(vector<float> chromosome) {
-    vector<int> phenotype;
-    //decode
-
-    return phenotype;
-}
-//đánh giá cá thể trong môi trường sống
-double calculateMetric(vector<int> phenotype, Problem environment) {
-    //calculate
-    return -1;
-}
 
 class Individual {
 private:
     //nhiễm sắc thể
-    vector<float> chromosome; 
+    vector<bool> chromosome; 
     //giá trị thích nghi
     double fitness;
 public:
     void init(Problem environment) {
-        size_t length; //cần tính chiều dài nhiễm sắc thể khi biết môi trường sống
-        //khởi tạo nhiễm sắc thể với chiều dài length mỗi gen là một số thực thuộc [0, 1]        
-        uniform_real_distribution<float> dis(0.0, 1.0);
+        size_t length = environment.getLength(); 
+        uniform_int_distribution<int> dis(0, 1);
         for (size_t i = 0; i != length; i++) {
             float r = dis(gen);
             chromosome.push_back(r);
@@ -46,10 +33,7 @@ public:
     }
     //tính giá trị thích nghi
     void calculateFitness(Problem environment) {
-        //giải mã nhiễm sắc thể
-        vector<int> phenotype = decode(this->chromosome);
-        //tính giá trị thích nghi
-        this->fitness = calculateMetric(phenotype, environment);
+        
     }
 
     //lấy chiều dài của nhiễn sắc thể
@@ -57,8 +41,11 @@ public:
         return this->chromosome.size();
     }
     //lấy nhiễm sắc thể
-    vector<float>& getChromosome() {
+    vector<bool> getChromosome() {
         return this->chromosome;
+    }
+    void setChromosome(vector<bool> chromosome) {
+        this->chromosome = chromosome;
     }
     //lấy giá trị thích nghi
     double getFitness() {
@@ -67,32 +54,38 @@ public:
     //hiển thị thông tin của cá thể
     void show() {
         printf("fitness = %.2lf\t\t", fitness);
-        printf("chormosome: { "); for (double it : chromosome) printf("%.2lf ", it); printf("}\t\t");
+        printf("chormosome: { "); for (bool it : chromosome) printf("%.2lf ", it); printf("}\t\t");
     }
 };
 
-//toán tử lai tạo
-vector<Individual> crossover(Individual p1, Individual p2) {
+//toán tử lai ghép, sử dụng lai ghép đồng nhất uniform crossover, xác suất hoán đổi là p_c
+vector<Individual> crossover(Individual p1, Individual p2, float p_c = 0.2) {
+    uniform_real_distribution<float> dis(0.0, 1.0);
     vector<Individual> offspring;
-    //crossover
+    //
     return offspring;
 }
 
-//toán tử đột biến
-void mutation(Individual& member) {
-    //mutation
+//toán tử đột biến sử dụng đột biến đảo bit với xác suất đột biến mỗi bit là p_m
+void mutation(Individual& member, float p_m = 0.2) {
+    //
 }
 
 class Population {
 private:
     //danh sách cá thể trong quần thể
     vector<Individual> list;
+    //cá thể ưu tú
+    vector<Individual> parent;
     //môi trường sống
     Problem environment;
 public:
-    //khởi tạo quần thể với n cá thể trong môi trường sống
-    void init(Problem environment, size_t n) {
+    Population(Problem environment) {
         this->environment = environment;
+    }
+    
+    //khởi tạo quần thể với n cá thể
+    void init(size_t n) {
         for (size_t i = 0; i != n; i++) {
             Individual member;
             member.init(environment);
@@ -105,7 +98,7 @@ public:
         return this->list.size();
     }
     //lấy danh sách các cá thể
-    vector<Individual>& getList() {
+    vector<Individual> getList() {
         return this->list;
     }
     //thêm một cá thể vào trong danh sách
@@ -113,21 +106,19 @@ public:
         this->list.push_back(member);
     }
     
-    //bình chọn n đại diện làm cha mẹ
-    vector<Individual> getParent(size_t n) {
-        vector<Individual> listParent;
-        //
-        return listParent;
-    }
+    //lấy danh sách cha mẹ, nếu rỗng
+    vector<Individual> getParent(size_t number_of_parent = 2) {
+        return this->parent;
+    } 
 
-    //chọn lọc sinh tồn
-    void selection() {
-
+    //chọn lọc sinh tồn, loại bỏ để còn n cá thể
+    void selection(size_t n, size_t number_of_parent = 2) {
+       
     }
     //hiển thị thông tin về quần thể
     void show() {
+        cout << "size of populaiton: " << list.size() << endl;
         for (size_t i = 0; i != list.size(); i++) {
-            cout << "size of populaiton: " << list.size() << endl;
             list[i].show();
         }
     }
@@ -139,20 +130,19 @@ Individual geneticalgorithm(Problem environment, //môi trường sống
                             size_t number_of_generation, //số lượng thế hệ
                             float p_c, //tỷ lệ lai tạo
                             float p_m //tỷ lệ đột biến
-                            )  
-{
+                            )  {
     uniform_real_distribution<float> dis(0.0, 1.0);
     Individual best;
-    Population population;
-    population.init(environment, number_of_individuals);
+    Population population(environment);
+    population.init(number_of_individuals);
     while (number_of_generation) {
         vector<Individual> parent = population.getParent(2);
         size_t number_of_offspring = number_of_individuals;
         while (number_of_offspring) {
-            float r_m = dis(gen);
+            float r_c = dis(gen);
             if (r_c <= p_c) {
                 vector<Individual> offspring = crossover(parent[0], parent[1]);
-                float r_c = dis(gen);
+                float r_m = dis(gen);
                 if (r_m <= p_m) {
                     mutation(offspring[0]);
                     mutation(offspring[1]);
@@ -170,7 +160,7 @@ Individual geneticalgorithm(Problem environment, //môi trường sống
                 }
             }
         }
-        population.selection();
+        population.selection(number_of_individuals);
         number_of_generation--;
     }
     //chọn ra cá thể có giá trị thích nghi tốt nhất
@@ -185,5 +175,18 @@ Individual geneticalgorithm(Problem environment, //môi trường sống
 }
 
 int main() {
+    vector<double> profix;
+    vector<double> weight;
+    double capacity;
 
+    Problem KnapsackProblem(profix, weight, capacity);
+    size_t number_of_individuals = 10;
+    size_t number_of_generation = 1000;
+    float p_c = 0.2;
+    float p_m = 0.3;
+
+    Individual best = geneticalgorithm(KnapsackProblem, number_of_individuals, number_of_generation, p_c, p_m);
+    best.show();
+    
+    return 0;
 }
