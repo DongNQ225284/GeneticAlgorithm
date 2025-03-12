@@ -176,7 +176,6 @@ public:
     void append(Individual member) {
         this->list.push_back(member);
     }
-    
     //lấy danh sách cha mẹ, nếu rỗng, lấy ra number_of_parent cá thể ngẫu nhiên
     vector<Individual> getParent(size_t number_of_parent = 2) {
         if (!parent.empty()) return this->parent;
@@ -194,33 +193,26 @@ public:
         }
         return parent;
     } 
-
     //chọn lọc sinh tồn, loại bỏ để còn n cá thể, sử dụng chọn lọc xếp hạng
     void selection(size_t n, size_t number_of_parent = 2) {
         uniform_real_distribution<float> dis(0.0, 1.0);
         size_t N = list.size();
-
         vector<size_t> rank;
         for (int i = 0; i != N; i++) {
             rank.push_back(i);
         }
-
         sort(rank.begin(), rank.end(), [&] (size_t a, size_t b) {
             return list[a].getFitness() < list[b].getFitness();
         });
-
-
         vector<double> S;
         S.push_back(1);
         for (size_t i = 1; i != N; i++) {
             S.push_back(S[i - 1] + i + 1);
         }
-        
         double sum = S[N - 1];
         vector<bool> mark(N, false);
         vector<Individual> new_generation;
         parent.clear();
-
         while (n > 0) {
             float r = dis(gen);
             size_t idx = upper_bound(S.begin(), S.end(), r * sum) - S.begin();
