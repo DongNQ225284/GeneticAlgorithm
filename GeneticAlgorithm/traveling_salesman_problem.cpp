@@ -263,17 +263,7 @@ public:
                 n--;
             }
         }
-
         list = new_generation;
-
-        sort(list.begin(), list.end(), [&] (Individual a, Individual b) {
-            return a.getFitness() > b.getFitness();
-        });
-        
-        parent.clear();
-        parent.push_back(list[0]);
-        parent.push_back(list[1]);
-
     }
     //hiển thị thông tin về quần thể
     void show() {
