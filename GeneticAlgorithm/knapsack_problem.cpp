@@ -184,7 +184,6 @@ public:
         vector<bool> mark(N, false);
         while (number_of_parent > 0) {
             size_t idx = dis(gen);
-
             if (!mark[idx]) {
                 parent.push_back(list[idx]);
                 mark[idx] = true;
@@ -243,7 +242,6 @@ void print(vector<Individual> list) {
         list[i].show();
     }
 }
-
 //Thuật toán GA trả về cá thể tốt nhất
 Individual geneticalgorithm(Problem environment, //môi trường sống
                             size_t number_of_individuals, //số lượng cá thể trong môi trường
@@ -252,7 +250,7 @@ Individual geneticalgorithm(Problem environment, //môi trường sống
                             float p_m //tỷ lệ đột biến
                             )  
 {
-    char chr;    
+    // char chr;    
     uniform_real_distribution<float> dis(0.0, 1.0);
     Individual best;
     Population population(environment);
@@ -265,7 +263,6 @@ Individual geneticalgorithm(Problem environment, //môi trường sống
         // cout << "parent:" << endl;
         // print(parent);
         // cin >> chr;
-
         size_t number_of_offspring = number_of_individuals;
         while (number_of_offspring > 0) {
             float r_c = dis(gen);
@@ -278,11 +275,9 @@ Individual geneticalgorithm(Problem environment, //môi trường sống
                 }
                 offspring[0].calculateFitness(environment);
                 offspring[1].calculateFitness(environment);
-                
                 // cout << "offspring: " << endl;
                 // print(offspring);
                 // cin >> chr;
-
                 population.append(offspring[0]);
                 number_of_offspring--;
 
@@ -293,7 +288,6 @@ Individual geneticalgorithm(Problem environment, //môi trường sống
         // cout << "population:" << endl;
         // population.show();
         // cin >> chr;
-
         population.selection(number_of_individuals);
         number_of_generation--;
     }
@@ -320,6 +314,7 @@ int main() {
     float p_m = 0.3;
 
     Individual best = geneticalgorithm(KnapsackProblem, number_of_individuals, number_of_generation, p_c, p_m);
+    
     cout << "Knapsack Problem:" << endl;
     KnapsackProblem.show();
     cout << endl;
