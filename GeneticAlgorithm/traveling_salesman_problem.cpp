@@ -2,7 +2,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
-
+#include <fstream>
 using namespace std;
 
 static random_device rd;
@@ -67,7 +67,7 @@ public:
         }
         total_cost += cost[chromosome[N - 1]][0];
         
-        this->fitness = -total_cost;
+        this->fitness = - total_cost;
     }
 
     //lấy chiều dài của nhiễn sắc thể
@@ -161,13 +161,14 @@ vector<Individual> crossover(Individual p1, Individual p2) {
     return offspring;
 }
 
-//toán tử đột biến sử dụng đột biến trao đổi chéo (swap mutation)
+//toán tử đột biến sử dụng đột biến đảo ngược (Inversion mutation)
 void mutation(Individual& member) {
     size_t length = member.getLength();
     vector<size_t> chromosome = member.getChromosome();
     uniform_int_distribution<size_t> dis(0, length - 1);
-    size_t p1 = dis(gen), p2 = dis(gen);
-    swap(chromosome[p1], chromosome[p2]);
+    size_t L = dis(gen), R = dis(gen);
+    if (L > R) swap(L, R);
+    swap(chromosome[L], chromosome[R]);
     member.setChromosome(chromosome);
 }
 
@@ -262,7 +263,17 @@ public:
                 n--;
             }
         }
+
         list = new_generation;
+
+        sort(list.begin(), list.end(), [&] (Individual a, Individual b) {
+            return a.getFitness() > b.getFitness();
+        });
+        
+        parent.clear();
+        parent.push_back(list[0]);
+        parent.push_back(list[1]);
+
     }
     //hiển thị thông tin về quần thể
     void show() {
@@ -287,7 +298,7 @@ Individual geneticalgorithm(Problem environment, //môi trường sống
                             float p_m //tỷ lệ đột biến
                             )  
 {
-    // char chr;    
+    char chr;    
     uniform_real_distribution<float> dis(0.0, 1.0);
     Individual best;
     Population population(environment);
@@ -344,21 +355,26 @@ Individual geneticalgorithm(Problem environment, //môi trường sống
 }
 
 int main() {
-    vector<vector<double>> cost =  {{0, 2, 8, 1}, 
-                                    {5, 0, 2, 8},
-                                    {3, 2, 0, 1},                    
-                                    {2, 1, 6, 0}};
-    
+    ifstream file("matrix.txt");
+
+    size_t n; file >> n;
+    vector<vector<double>> cost(n, vector<double>(n));
+    for (size_t i = 0; i != n; i++) {
+        for (size_t j = 0; j !=n ; j++) {
+            file >> cost[i][j];
+        }
+    }
+
     Problem TravelingSalesmanProblem(cost);
 
-    size_t number_of_individuals = 10;
-    size_t number_of_generation = 1000;
-    float p_c = 0.2;
+    size_t number_of_individuals = 8;
+    size_t number_of_generation = 3000;
+    float p_c = 0.9;
     float p_m = 0.3;
 
     Individual best = geneticalgorithm(TravelingSalesmanProblem, number_of_individuals, number_of_generation, p_c, p_m);
     TravelingSalesmanProblem.show();
     best.show();
-    
+
     return 0;
 }
