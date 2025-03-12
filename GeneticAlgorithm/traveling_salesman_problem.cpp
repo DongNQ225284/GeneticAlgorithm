@@ -61,7 +61,7 @@ public:
         size_t N = chromosome.size();
         
         double total_cost = 0;
-        total_cost += cost[chromosome[0]][chromosome[1]];
+        total_cost += cost[0][chromosome[1]];
         for (size_t i = 1; i != N; i++) {
             total_cost += cost[chromosome[i - 1]][chromosome[i]];
         }
